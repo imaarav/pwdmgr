@@ -34,12 +34,6 @@ class record:
         self.password = password
         self.mode = mode
         
-        # if key == None:
-            # self.key = os.urandom(32)
-        # else:
-            # self.key = key
-        
-        # self.comb_hash = comb_hash
         self.IV = IV
         
         if salt == None:
@@ -68,7 +62,7 @@ class record:
         if v == None:
             self.username = pad(self.username)
             self.username = base64.b64encode(aes_encryptor.encrypt(self.username))
-        # self.password = self.password + self.salt
+        
         if v != None:
             self.password = hashed(self.password, self.salt)
         
@@ -76,28 +70,26 @@ class record:
         
 
         self.password = base64.b64encode(aes_encryptor.encrypt(self.password))
-        
-        
-        # self.key = base64.b64encode(self.key)
+
         self.IV = base64.b64encode(self.IV)
         
         self.mode = base64.b64encode(self.mode)
         self.service = base64.b64encode(self.service)
-        # self.salt = base64.b64encode(self.salt)
+        self.salt = base64.b64encode(self.salt)
         
         key = None
         aes_encryptor = None
         master_password = None
         
     def decrypt(self, master_password, v = None):
-        # self.key = base64.b64decode(self.key)
+
+        self.salt = base64.b64decode(self.salt)
         key = KDF.PBKDF2(master_password, self.salt, 32, 2000)
         
         self.IV = base64.b64decode(self.IV)
         
         self.mode = base64.b64decode(self.mode)
         self.service = base64.b64decode(self.service)
-        # self.salt = base64.b64decode(self.salt)
         
         if v == None:
             self.username = base64.b64decode(self.username)
@@ -128,8 +120,6 @@ class record:
         key = None
         aes_decryptor = None
         master_password = None
-
-        # self.password = self.password.strip(self.salt)
 
 
     def write(self, filename, target_directory):
